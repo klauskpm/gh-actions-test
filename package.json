@@ -1,6 +1,6 @@
 {
   "name": "github-actions-app",
-  "version": "1.5.0",
+  "version": "1.0.0",
   "description": "App to test how Github Actions works",
   "author": "Klaus Kazlauskas <klausmachado@gmail.com>",
   "license": "MIT LICENSE",
