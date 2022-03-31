@@ -1,0 +1,30 @@
+# dependencies
+/node_modules
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.DS_Store
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+/.idea
+/.vscode
+
+/src/config/appConfig.json
+
+/src/styles/fuse-helpers.css
+
+*.log
+*.swp
+
+# local linked packages
+.yalc
+yalc.lock

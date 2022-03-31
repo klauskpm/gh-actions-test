@@ -1,0 +1,39 @@
+name: Multiple Steps environment variable strategy
+
+on:
+  workflow_dispatch:
+    inputs:
+      sel_env:
+        type: choice
+        options:
+          - 'SANDBOX'
+          - 'STAGING'
+          - 'PRODUCTION'
+        default: 'PRODUCTION'
+        required: true
+        description: Pick an environment to deploy
+
+jobs:
+  single-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Production step
+        if: ${{ github.event.inputs.sel_env == 'PRODUCTION' }}
+        run: |
+          echo "SUP_TEST=valor_prod" >> $GITHUB_ENV
+          echo "SET_TEST=value_prod" >> $GITHUB_ENV
+        
+      - name: Staging step
+        if: ${{ github.event.inputs.sel_env == 'STAGING' }}
+        run: |
+          echo "SUP_TEST=valor_staging" >> $GITHUB_ENV
+          echo "SET_TEST=value_staging" >> $GITHUB_ENV
+        
+      - name: Sandbox step
+        if: ${{ github.event.inputs.sel_env == 'SANDBOX' }}
+        run: |
+          echo "SUP_TEST=valor_sandbox" >> $GITHUB_ENV
+          echo "SET_TEST=value_sandbox" >> $GITHUB_ENV
+
+      - run: echo ${{ env.SUP_TEST }}
+      - run: echo ${{ env.SET_TEST }}

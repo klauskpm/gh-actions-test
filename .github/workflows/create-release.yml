@@ -1,0 +1,34 @@
+name: Create Release
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download project
+        uses: actions/checkout@v3
+      
+      - name: Prepare Node environment
+        uses: ./.github/actions/prepare-node-env
+        env:
+          NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+
+      - name: Create a new release
+        id: semantic
+        uses: cycjimmy/semantic-release-action@v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          semantic_version: 19.0.2
+          extra_plugins: |
+            @semantic-release/github@8.0.2
+            @semantic-release/git@10.0.1
+            @semantic-release/changelog@6.0.1
+          # Whether to run semantic release in `dry-run` mode. It will override the dryRun attribute in your configuration file
+          dry_run: false
+  
+#       - name: Output info
+#         run: |
+#           echo ${{ steps.semantic.outputs.new_release_published }}
+#           echo ${{ steps.semantic.outputs.new_release_version }}

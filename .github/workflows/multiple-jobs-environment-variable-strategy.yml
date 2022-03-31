@@ -1,0 +1,48 @@
+name: Multiple Jobs environment variable strategy
+
+on:
+  workflow_dispatch:
+    inputs:
+      sel_env:
+        type: choice
+        options:
+          - 'SANDBOX'
+          - 'STAGING'
+          - 'PRODUCTION'
+        default: 'PRODUCTION'
+        required: true
+        description: Pick an environment to deploy
+
+jobs:
+  prod-job:
+    if: ${{ github.event.inputs.sel_env == 'PRODUCTION' }}
+    runs-on: ubuntu-latest
+    name: Prod Job
+    env:
+      SUP_TEST: valor_prod
+      SET_TEST: value_prod
+    steps:
+      - run: echo ${{ env.SUP_TEST }}
+      - run: echo ${{ env.SET_TEST }}
+      
+  staging-job:
+    if: ${{ github.event.inputs.sel_env == 'STAGING' }}
+    runs-on: ubuntu-latest
+    name: Staging Job
+    env:
+      SUP_TEST: valor_staging
+      SET_TEST: value_staging
+    steps:
+      - run: echo ${{ env.SUP_TEST }}
+      - run: echo ${{ env.SET_TEST }}
+
+  sandbox-job:
+    if: ${{ github.event.inputs.sel_env == 'SANDBOX' }}
+    runs-on: ubuntu-latest
+    name: Sandbox Job
+    env:
+      SUP_TEST: valor_sandbox
+      SET_TEST: value_sandbox
+    steps:
+      - run: echo ${{ env.SUP_TEST }}
+      - run: echo ${{ env.SET_TEST }}

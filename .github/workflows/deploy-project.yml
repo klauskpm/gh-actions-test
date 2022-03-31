@@ -1,0 +1,64 @@
+name: Deploy Project
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        options:
+          - SANDBOX
+          - STAGING
+          - PRODUCTION
+        default: PRODUCTION
+        required: true
+        description: Pick a environment to deploy
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Download project
+      uses: actions/checkout@v3
+
+    - name: Prepare Node environment
+      uses: ./.github/actions/prepare-node-env
+      env:
+        NPM_TOKEN: ${{secrets.NPM_TOKEN}}
+
+    - name: Build project
+      run: npm run build
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: project-build-artifact
+        path: build
+          
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build]
+    environment: production
+    env:
+      BUCKET_NAME: ${{ format('{0}_BUCKET_NAME', github.event.inputs.environment) }}
+      DIST_ID: ${{ format('{0}_DIST_ID', github.event.inputs.environment) }}
+    steps:
+      - name: Download build
+        uses: actions/download-artifact@v3
+        with:
+          name: project-build-artifact
+
+#       Adds some seconds, but we can set a fixed python version and cache pip in the future
+#       - name: Setup Python
+#         uses: actions/setup-python@v3.0.0
+#         with:
+#           python-version: 3.10.4
+      
+      - name: Install awscli
+        run: pip install awscli
+      
+      - name: Deploy to AWS S3
+        run: |
+          aws help
+
+      - run: echo 'BUCKET_NAME:' '${{ secrets[env.BUCKET_NAME] }}'
+      - run: echo 'DIST_ID:' '${{ secrets[env.DIST_ID] }}'

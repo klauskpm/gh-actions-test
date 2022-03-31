@@ -1,0 +1,35 @@
+name: Prepare Node Environment
+description: Download the code, setup node, load dependencies from cache or install them if not available.
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Setup Node v16.14.0
+      id: setup-node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16.14.0
+        always-auth: true
+        registry-url: https://registry.npmjs.org
+
+    - name: Cache node modules
+      id: cache-nodemodules
+      uses: actions/cache@v3
+      env:
+        cache-name: cache-node-modules
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+#         uncomment if it makes sense
+#         restore-keys: |
+#           ${{ runner.os }}-build-${{ env.cache-name }}-
+#           ${{ runner.os }}-build-
+#           ${{ runner.os }}-
+
+    - name: Install dependencies
+      shell: bash
+      if: steps.cache-nodemodules.outputs.cache-hit != 'true'
+      run: npm ci
+      env:
+        NODE_AUTH_TOKEN: ${{env.NPM_TOKEN}}
